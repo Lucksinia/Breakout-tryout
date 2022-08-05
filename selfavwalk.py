@@ -188,3 +188,5 @@ def dimmer_plot(n):
 sr_plot(80)
 miopic_plot(80)
 dimmer_plot(300)
+
+# TODO: Stuff all SAW's in matplotlib animations

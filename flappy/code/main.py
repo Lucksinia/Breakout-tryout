@@ -1,6 +1,7 @@
+from asyncio import events
 import pygame, sys
 from settings import *
-from sprites import Player
+from sprites import Player, Ball
 
 
 class Game:
@@ -13,6 +14,7 @@ class Game:
         # groops(sprites)
         self.all_sprites = pygame.sprite.Group()
         self.player = Player(self.all_sprites)
+        self.ball = Ball(self.all_sprites, self.player)
 
     def create_bg(self):  # Scale up bg by calculating scale factor
         bg_original = pygame.image.load("flappy/assets/others/bg.png").convert()
@@ -29,6 +31,9 @@ class Game:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        self.ball.active = True
 
             self.all_sprites.update(dt)  # update the game internally
             self.display_surface.blit(self.bg, (0, 0))

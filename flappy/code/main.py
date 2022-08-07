@@ -15,6 +15,7 @@ class Game:
         self.all_sprites = pygame.sprite.Group()
         self.player = Player(self.all_sprites)
         self.ball = Ball(self.all_sprites, self.player)
+        self.stage_setup()
 
     def create_bg(self):  # Scale up bg by calculating scale factor
         bg_original = pygame.image.load("flappy/assets/others/bg.png").convert()
@@ -23,6 +24,13 @@ class Game:
         scaled_width = bg_original.get_width() * scale_factor
         scaled_bg = pygame.transform.scale(bg_original, (scaled_width, scaled_height))
         return scaled_bg
+
+    def stage_setup(self):
+        # cycle thorought all rows and columns
+        for row_index, row in enumerate(BLOCK_MAP):
+            print(f"index in row{row_index}")
+            print(f"row number:{row}")
+        # find positions of blocks
 
     def run(self, DT=60):
         while True:

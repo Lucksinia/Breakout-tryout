@@ -1,7 +1,7 @@
 from asyncio import events
 import pygame, sys
 from settings import *
-from sprites import Player, Ball
+from sprites import Player, Ball, Block
 
 
 class Game:
@@ -13,9 +13,10 @@ class Game:
         self.bg = self.create_bg()
         # groops(sprites)
         self.all_sprites = pygame.sprite.Group()
+        self.block_sprites = pygame.sprite.Group()
         self.player = Player(self.all_sprites)
-        self.ball = Ball(self.all_sprites, self.player)
         self.stage_setup()
+        self.ball = Ball(self.all_sprites, self.player, self.block_sprites)
 
     def create_bg(self):  # Scale up bg by calculating scale factor
         bg_original = pygame.image.load("flappy/assets/others/bg.png").convert()
@@ -26,11 +27,13 @@ class Game:
         return scaled_bg
 
     def stage_setup(self):
-        # cycle thorought all rows and columns
+        """cycle thorought all rows and columns find positions of blocks"""
         for row_index, row in enumerate(BLOCK_MAP):
-            print(f"index in row{row_index}")
-            print(f"row number:{row}")
-        # find positions of blocks
+            for col_index, col in enumerate(row):
+                if col != " ":
+                    x = col_index * (BLOCK_WIDTH + GAP_SIZE) + GAP_SIZE // 2
+                    y = row_index * (BLOCK_HEIGHT + GAP_SIZE) + GAP_SIZE // 2
+                    Block(col, (x, y), [self.all_sprites, self.block_sprites])
 
     def run(self, DT=60):
         while True:

@@ -47,11 +47,12 @@ class Player(pygame.sprite.Sprite):
 
 
 class Ball(pygame.sprite.Sprite):
-    def __init__(self, groups, player):
+    def __init__(self, groups, player, blocks):
         super().__init__(groups)
 
         # objects with collision
         self.player = player
+        self.blocks = blocks
         # TODO : Redraw ball(again)
         self.image = pygame.image.load("flappy/assets/others/ball.gif").convert_alpha()
 
@@ -86,7 +87,7 @@ class Ball(pygame.sprite.Sprite):
                 self.direction.y = -1
 
     def collision(self, direction):
-        overlaping = []
+        overlaping = pygame.sprite.spritecollide(self, self.blocks, False)
         if self.rect.colliderect(self.player.rect):
             overlaping.append(self.player)
         if overlaping:
@@ -96,7 +97,7 @@ class Ball(pygame.sprite.Sprite):
                         self.rect.right >= sprite.rect.left
                         and self.old_rect.right <= sprite.old_rect.left
                     ):
-                        self.rect.right = sprite.rect.left
+                        self.rect.right = sprite.rect.left - 1  # offset
                         self.pos.x = self.rect.x
                         self.direction.x *= -1
 
@@ -104,16 +105,20 @@ class Ball(pygame.sprite.Sprite):
                         self.rect.left <= sprite.rect.right
                         and self.old_rect.left >= sprite.old_rect.right
                     ):
-                        self.rect.left = sprite.rect.right
+                        self.rect.left = sprite.rect.right + 1  # offset
                         self.pos.x = self.rect.x
                         self.direction.x *= -1
+
+                    if getattr(sprite, "health", None):
+                        sprite.get_damage(1)
+
             elif direction == "vertical":
                 for sprite in overlaping:
                     if (
                         self.rect.bottom >= sprite.rect.top
                         and self.old_rect.bottom <= sprite.old_rect.top
                     ):
-                        self.rect.bottom = sprite.rect.top
+                        self.rect.bottom = sprite.rect.top - 1  # offset
                         self.pos.y = self.rect.y
                         self.direction.y *= -1
 
@@ -121,9 +126,12 @@ class Ball(pygame.sprite.Sprite):
                         self.rect.top <= sprite.rect.bottom
                         and self.old_rect.top >= sprite.old_rect.bottom
                     ):
-                        self.rect.top = sprite.rect.bottom
+                        self.rect.top = sprite.rect.bottom + 1  # offset
                         self.pos.y = self.rect.y
                         self.direction.y *= -1
+
+                    if getattr(sprite, "health", None):
+                        sprite.get_damage(1)
 
     def update(self, dt):
 
@@ -145,3 +153,21 @@ class Ball(pygame.sprite.Sprite):
         else:
             self.rect.midbottom = self.player.rect.midtop
             self.pos = pygame.math.Vector2(self.rect.topleft)
+
+
+class Block(pygame.sprite.Sprite):
+    def __init__(self, block_type, pos, groups) -> None:
+        super().__init__(groups)
+        self.image = pygame.Surface((BLOCK_WIDTH, BLOCK_HEIGHT))
+        self.rect = self.image.get_rect(topleft=pos)
+        self.old_rect = self.rect.copy()
+        # damage calculation
+        self.health = int(block_type)
+
+    def get_damage(self, amount):
+        self.health -= amount
+        if self.health > 0:
+            # update block
+            pass
+        else:
+            self.kill()

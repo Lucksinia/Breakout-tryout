@@ -24,6 +24,19 @@ COLOR_LEGEND = {
     "6": "bronze",
     "7": "gray",
 }
+"""
+# TODO: draw block sprites in grayscale:
+1. top
+2. bottom
+3. right
+4. left
+5. center
+6. bottomleft
+7. bottomright
+8. topleft
+9. topright
+# TODO: find a way to convert grayscale to CMY in pygame for start
+"""
 GAP_SIZE = 2
 BLOCK_HEIGHT = WINDOW_HEIGHT / len(BLOCK_MAP) - GAP_SIZE
 BLOCK_WIDTH = WINDOW_WIDTH / len(BLOCK_MAP[0]) - GAP_SIZE

@@ -15,6 +15,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(
             midbottom=(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 20)
         )
+        self.old_rect = self.rect.copy()
         self.pos = pygame.math.Vector2(self.rect.topleft)
         self.direction = pygame.math.Vector2()
         self.speed = 0.9
@@ -37,6 +38,8 @@ class Player(pygame.sprite.Sprite):
             self.pos.x = self.rect.x
 
     def update(self, dt):
+        # previous position temp
+        self.old_rect = self.rect.copy()
         self.input()
         self.pos.x += self.direction.x * self.speed * dt
         self.rect.x = round(self.pos.x)
@@ -54,6 +57,7 @@ class Ball(pygame.sprite.Sprite):
 
         # ball position
         self.rect = self.image.get_rect(midbottom=player.rect.midtop)
+        self.old_rect = self.rect.copy()
         self.pos = pygame.math.Vector2(self.rect.topleft)
 
         # choise allows to change directions
@@ -81,21 +85,62 @@ class Ball(pygame.sprite.Sprite):
                 self.active = False
                 self.direction.y = -1
 
-    def collision(self):
-        pass
+    def collision(self, direction):
+        overlaping = []
+        if self.rect.colliderect(self.player.rect):
+            overlaping.append(self.player)
+        if overlaping:
+            if direction == "horizontal":
+                for sprite in overlaping:
+                    if (
+                        self.rect.right >= sprite.rect.left
+                        and self.old_rect.right <= sprite.old_rect.left
+                    ):
+                        self.rect.right = sprite.rect.left
+                        self.pos.x = self.rect.x
+                        self.direction.x *= -1
+
+                    if (
+                        self.rect.left <= sprite.rect.right
+                        and self.old_rect.left >= sprite.old_rect.right
+                    ):
+                        self.rect.left = sprite.rect.right
+                        self.pos.x = self.rect.x
+                        self.direction.x *= -1
+            elif direction == "vertical":
+                for sprite in overlaping:
+                    if (
+                        self.rect.bottom >= sprite.rect.top
+                        and self.old_rect.bottom <= sprite.old_rect.top
+                    ):
+                        self.rect.bottom = sprite.rect.top
+                        self.pos.y = self.rect.y
+                        self.direction.y *= -1
+
+                    if (
+                        self.rect.top <= sprite.rect.bottom
+                        and self.old_rect.top >= sprite.old_rect.bottom
+                    ):
+                        self.rect.top = sprite.rect.bottom
+                        self.pos.y = self.rect.y
+                        self.direction.y *= -1
 
     def update(self, dt):
 
         if self.direction.magnitude() != 0:
             self.direction = self.direction.normalize()
+            # previous position temp
+            self.old_rect = self.rect.copy()
 
         if self.active:
             self.pos.x += self.direction.x * self.speed * dt
             self.rect.x = round(self.pos.x)
+            self.collision("horizontal")
             self.window_collision("horizontal")
-            # separation
+            # separation of the movement axis
             self.pos.y += self.direction.y * self.speed * dt
             self.rect.y = round(self.pos.y)
+            self.collision("vertical")
             self.window_collision("vertical")
         else:
             self.rect.midbottom = self.player.rect.midtop

@@ -23,6 +23,7 @@ COLOR_LEGEND = {
     "5": "purple",
     "6": "bronze",
     "7": "gray",
+    "player": "cyan",
 }
 """
 # TODO: draw block sprites in grayscale:

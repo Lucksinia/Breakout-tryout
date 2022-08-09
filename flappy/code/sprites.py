@@ -4,12 +4,14 @@ from random import choice
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, groups):
+    def __init__(self, groups, surfacemanager):
         super().__init__(groups)
 
         # basic setup(change later to actual png)
-        self.image = pygame.Surface((WINDOW_WIDTH // 10, WINDOW_HEIGHT // 20))
-        self.image.fill("red")
+        self.sufacemanager = surfacemanager
+        self.image = surfacemanager.get_surface(
+            "player", (WINDOW_WIDTH // 10, WINDOW_HEIGHT // 20)
+        )
 
         # position on screen
         self.rect = self.image.get_rect(
@@ -156,9 +158,12 @@ class Ball(pygame.sprite.Sprite):
 
 
 class Block(pygame.sprite.Sprite):
-    def __init__(self, block_type, pos, groups) -> None:
+    def __init__(self, block_type, pos, groups, surfacemanager) -> None:
         super().__init__(groups)
-        self.image = pygame.Surface((BLOCK_WIDTH, BLOCK_HEIGHT))
+        self.surfacemanager = surfacemanager
+        self.image = self.surfacemanager.get_surface(
+            block_type, (BLOCK_WIDTH, BLOCK_HEIGHT)
+        )
         self.rect = self.image.get_rect(topleft=pos)
         self.old_rect = self.rect.copy()
         # damage calculation

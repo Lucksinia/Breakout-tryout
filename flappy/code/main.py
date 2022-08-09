@@ -2,6 +2,7 @@ from asyncio import events
 import pygame, sys
 from settings import *
 from sprites import Player, Ball, Block
+from edit_manager import SurfaceManager
 
 
 class Game:
@@ -14,7 +15,8 @@ class Game:
         # groops(sprites)
         self.all_sprites = pygame.sprite.Group()
         self.block_sprites = pygame.sprite.Group()
-        self.player = Player(self.all_sprites)
+        self.surfacemaker = SurfaceManager()
+        self.player = Player(self.all_sprites, self.surfacemaker)
         self.stage_setup()
         self.ball = Ball(self.all_sprites, self.player, self.block_sprites)
 
@@ -33,7 +35,12 @@ class Game:
                 if col != " ":
                     x = col_index * (BLOCK_WIDTH + GAP_SIZE) + GAP_SIZE // 2
                     y = row_index * (BLOCK_HEIGHT + GAP_SIZE) + GAP_SIZE // 2
-                    Block(col, (x, y), [self.all_sprites, self.block_sprites])
+                    Block(
+                        col,
+                        (x, y),
+                        [self.all_sprites, self.block_sprites],
+                        self.surfacemaker,
+                    )
 
     def run(self, DT=60):
         while True:

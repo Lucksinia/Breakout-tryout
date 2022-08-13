@@ -15,6 +15,7 @@ class Game:
         # groops(sprites)
         self.all_sprites = pygame.sprite.Group()
         self.block_sprites = pygame.sprite.Group()
+        # setup actors
         self.surfacemaker = SurfaceManager()
         self.player = Player(self.all_sprites, self.surfacemaker)
         self.stage_setup()
